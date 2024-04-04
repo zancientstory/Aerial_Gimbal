@@ -179,8 +179,8 @@ void TimerTaskLoop500Hz(void)
 void TimerTaskLoop100Hz(void)
 {
     GimbalRequestStatePacketSend();
-    printf("%f,%f,%f\n", Gimbal.MotorMeasure.ShootMotor.AmmoLeftMotorSpeed,Gimbal.MotorMeasure.ShootMotor.AmmoRightMotorSpeed,shoot_data_t.initial_speed);
-   //printf("%f\n", Gimbal.MotorMeasure.ShootMotor.AmmoLeftMotorSpeed);
+//    printf("%f,%f,%f\n", Gimbal.MotorMeasure.ShootMotor.AmmoLeftMotorSpeed,Gimbal.MotorMeasure.ShootMotor.AmmoRightMotorSpeed,shoot_data_t.initial_speed);
+	printf("%f\n",Gimbal.MotorMeasure.ShootMotor.RotorMotorSpeed);
 }
 
 void TIM3_IRQHandler(void)
@@ -264,7 +264,7 @@ OfflineCounter_t OfflineCounter;
 OfflineMonitor_t OfflineMonitor;
 void CommuniteOfflineCounterUpdate(void)
 {
-    OfflineCounter.PitchMotor++;
+    //OfflineCounter.PitchMotor++;
     //OfflineCounter.YawMotor++;
     OfflineCounter.RotorMotor++;
     OfflineCounter.AmmoLeftMotor++;

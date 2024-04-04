@@ -60,9 +60,6 @@ void GimbalMotorControl(int16_t YawMotor, int16_t PitchMotor, int16_t RotorMotor
 
     can_tx_message.StdId = 0x1FF; // pitch and yaw motor
     HAL_CAN_AddTxMessage(&hcan1, &can_tx_message, (MotorSendBuffer + 8), &send_mail_box);
-		
-    //can_tx_message.StdId = 0x1FF; // pitch and yaw motor
-  //  HAL_CAN_AddTxMessage(&hcan2, &can_tx_message, (MotorSendBuffer + 8), &send_mail_box);
 
 }
 void DaMiaoCanSend(float DaMiao)
@@ -159,6 +156,7 @@ void MotorProcess(uint32_t MotorID, CAN_HandleTypeDef *hcan, uint8_t *message)
         break;
     case DAMIAO_PITCH_MOTOR_MASTER_ID:
         damiao_receive_data_process(&DamiaoPitchMotorMeasure, message);
+				break;
     case ROTOR_MOTOR_ID:
         get_motor_measure(&RotorMotorMeasure, message);
         break;

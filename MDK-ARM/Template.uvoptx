@@ -175,6 +175,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>shoot_data_t,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>5</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>rx_data</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

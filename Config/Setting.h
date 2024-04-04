@@ -20,8 +20,8 @@
 // 主发射机构类型
 // master ID(slave id)
 #define YAW_MOTOR_ID 0x206   //(0x1ff)
-#define PITCH_MOTOR_ID 0x205 //(0x1ff)
-#define DAMIAO_PITCH_MOTOR_SLAVE_ID 0x02
+#define PITCH_MOTOR_ID 0x205 //(0x1ff) 
+#define DAMIAO_PITCH_MOTOR_SLAVE_ID 0x07
 #define DAMIAO_PITCH_MOTOR_MASTER_ID 0x01
 #define ROTOR_MOTOR_ID 0x202      //(0x200)
 #define AMMO_LEFT_MOTOR_ID 0x204  //(0x200)

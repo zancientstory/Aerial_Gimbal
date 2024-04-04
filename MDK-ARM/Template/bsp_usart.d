@@ -7,12 +7,12 @@ template/bsp_usart.o: ..\bsp\bsp_usart.c ..\bsp\bsp_usart.h \
   ..\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h \
   ..\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h \
   ..\Drivers\CMSIS\Include\core_cm4.h \
-  C:\worker\Aerial\Drivers\CMSIS\Include\cmsis_version.h \
-  C:\worker\Aerial\Drivers\CMSIS\Include\cmsis_compiler.h \
-  C:\worker\Aerial\Drivers\CMSIS\Include\cmsis_armclang.h \
+  C:\Users\chaos\Desktop\Aerial_Gimbal\Drivers\CMSIS\Include\cmsis_version.h \
+  C:\Users\chaos\Desktop\Aerial_Gimbal\Drivers\CMSIS\Include\cmsis_compiler.h \
+  C:\Users\chaos\Desktop\Aerial_Gimbal\Drivers\CMSIS\Include\cmsis_armclang.h \
   C:\Program\ Files\ (x86)\keil5\ARM\ARMCLANG\include\arm_compat.h \
   C:\Program\ Files\ (x86)\keil5\ARM\ARMCLANG\include\arm_acle.h \
-  C:\worker\Aerial\Drivers\CMSIS\Include\mpu_armv7.h \
+  C:\Users\chaos\Desktop\Aerial_Gimbal\Drivers\CMSIS\Include\mpu_armv7.h \
   ..\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\Legacy\stm32_hal_legacy.h \
   C:\Program\ Files\ (x86)\keil5\ARM\ARMCLANG\include\stddef.h \

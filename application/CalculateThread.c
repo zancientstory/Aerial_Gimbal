@@ -231,46 +231,62 @@ bool_t HEAT_CTRL_flag = 1;  // 热量控制开关
 
 void GimbalFireModeUpdate(void)
 {
+	if(Gimbal.StateMachine != GM_MATCH)
+	{
+		Gimbal.FireMode = GM_FIRE_UNABLE;
+		return;
+	}
+	else
+	{
+		if(SHOOT_COMMAND_KEYMAP)
+		{
+			Gimbal.FireMode = GM_FIRE_BUSY;
+		}
+		else
+		{
+		Gimbal.FireMode = GM_FIRE_READY;
+		}
+	}
+//    if (Gimbal.StateMachine == GM_MATCH)
+//    {
+//        if (Gimbal.FireMode == GM_FIRE_UNABLE)
+//        {
+//            Gimbal.FireMode = GM_FIRE_READY; // 发射就绪态
+//        }
 
-    if (Gimbal.StateMachine == GM_MATCH)
-    {
-        if (Gimbal.FireMode == GM_FIRE_UNABLE)
-        {
-            Gimbal.FireMode = GM_FIRE_READY; // 发射就绪态
-        }
-
-        //  正常射击模式的状态机 : "就绪->射击->冷却->就绪->......"
-        if (Gimbal.FireMode == GM_FIRE_READY)
-        {
-            if (SHOOT_COMMAND_KEYMAP)
-            {
-                Gimbal.FireMode = GM_FIRE_BUSY;
-                gimbal_fire_countdown = ROTOR_TIMESET_BUSY;
-            }
-        }
-        else if (Gimbal.FireMode == GM_FIRE_BUSY)
-        {
-            if (gimbal_fire_countdown > 0)
-            {
-                gimbal_fire_countdown--;
-            }
-            else
-            {
-                Gimbal.FireMode = GM_FIRE_COOLING;
-                gimbal_cooling_countdown = ROTOR_TIMESET_COOLING;
-            }
-        }
-        else if (Gimbal.FireMode == GM_FIRE_COOLING)
-        {
-            if (gimbal_cooling_countdown > 0)
-            {
-                gimbal_cooling_countdown--;
-            }
-            else
-            {
-                Gimbal.FireMode = GM_FIRE_READY;
-            }
-        }
+//        //  正常射击模式的状态机 : "就绪->射击->冷却->就绪->......"
+//        if (Gimbal.FireMode == GM_FIRE_READY)
+//        {
+//            if (SHOOT_COMMAND_KEYMAP)
+//            {
+//                Gimbal.FireMode = GM_FIRE_BUSY;
+//                gimbal_fire_countdown = ROTOR_TIMESET_BUSY;
+//            }
+//        }
+//        else if (Gimbal.FireMode == GM_FIRE_BUSY)
+//        {
+//            if (gimbal_fire_countdown > 0)
+//            {
+//                gimbal_fire_countdown--;
+//            }
+//            else
+//            {
+//                Gimbal.FireMode = GM_FIRE_COOLING;
+//                gimbal_cooling_countdown = ROTOR_TIMESET_COOLING;
+//            }
+//        }
+//        else if (Gimbal.FireMode == GM_FIRE_COOLING)
+//        {
+//            if (gimbal_cooling_countdown > 0)
+//            {
+//                gimbal_cooling_countdown--;
+//            }
+//            else
+//            {
+//                Gimbal.FireMode = GM_FIRE_READY;
+//            }
+//        }
+//}
         //        //  异常射击模式的状态机，用于反堵转
         //        else if (Gimbal.FireMode == GM_FIRE_LAGGING)
         //        {
@@ -300,11 +316,11 @@ void GimbalFireModeUpdate(void)
         //            gimbal_reverse_countdown = ROTOR_TIMESET_RESERVE;
         //            Gimbal.FireMode = GM_FIRE_LAGGING;
         //        }
-    }
-    else
-    {
-        Gimbal.FireMode = GM_FIRE_UNABLE;
-    }
+//    }
+//    else
+//    {
+//        Gimbal.FireMode = GM_FIRE_UNABLE;
+//    }
 }
 
 GimbalControlMode_e CMthis = GM_NO_CONTROL;
@@ -599,10 +615,10 @@ void RotorCommandUpdate(void)
     {
         Gimbal.Command.Rotor = ROTOR_SPEEDSET_FORWARD * ROTOR_MOTOR_DIRECTION;
     }
-    else if (Gimbal.FireMode == GM_FIRE_LAGGING)
-    {
-        Gimbal.Command.Rotor = ROTOR_SPEEDSET_BACKWARD * (-ROTOR_MOTOR_DIRECTION);
-    }
+//    else if (Gimbal.FireMode == GM_FIRE_LAGGING)
+//    {
+//        Gimbal.Command.Rotor = ROTOR_SPEEDSET_BACKWARD * (-ROTOR_MOTOR_DIRECTION);
+//    }
     else if (Gimbal.FireMode == GM_FIRE_UNABLE)
     {
         Gimbal.Command.Rotor = 0;

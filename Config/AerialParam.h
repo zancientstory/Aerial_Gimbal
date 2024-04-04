@@ -18,16 +18,16 @@
 #define YAW_MAX_SPEED 600
 #define YAW_MAX_ISPEED 30
 // 摩擦轮参数
-#define AMMO_SPEEDSET_30MS 8100//7250
+#define AMMO_SPEEDSET_30MS 7550
 
 #define ROTOR_SPEEDSET_FORWARD 5700.0f
-#define ROTOR_SPEEDSET_BACKWARD 2000.0f
+//#define ROTOR_SPEEDSET_BACKWARD 2000.0f
 
-#define ROTOR_TIMESET_BUSY 68            // 68//拨盘的旋转时间
-#define ROTOR_TIMESET_COOLING 10         // 2//第一档射频
-#define ROTOR_TIMESET_COOLING_SECOND 120 // 80//第二档
-#define ROTOR_TIMESET_RESERVE 35         // 35//堵转以后倒转的时间
-#define ROTOR_LAGGING_COUNTER_MAX 42     // 42堵转计时
+//#define ROTOR_TIMESET_BUSY 100            // 68//拨盘的旋转时间
+//#define ROTOR_TIMESET_COOLING 10         // 2//第一档射频
+//#define ROTOR_TIMESET_COOLING_SECOND 120 // 80//第二档
+//#define ROTOR_TIMESET_RESERVE 35         // 35//堵转以后倒转的时间
+//#define ROTOR_LAGGING_COUNTER_MAX 42     // 42堵转计时
 
 #define DELTA_HEAT_MAX 30
 
