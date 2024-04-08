@@ -12,5 +12,6 @@ void AttitudeThread(void const *pvParameters);
 
 void GetCurrentQuaternion(float q[4]);
 void GimbalEulerSystemMeasureUpdate(EulerSystemMeasure_t *IMU);
+extern float INS_angle[3];
 
 #endif

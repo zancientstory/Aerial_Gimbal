@@ -178,6 +178,27 @@ void GimbalEulerSystemMeasureUpdate(EulerSystemMeasure_t *IMU)
 
 }
 #endif
+#ifdef IMU_DIRECTION_rxyrz_XYZ
+int n = 1;
+double temp_bias = 0;
+void AHRS_update(float quat[4], float time, float gyro[3], float accel[3])
+{
+    MahonyAHRSupdate(quat, -gyro[0], gyro[1], -gyro[2] + GYRO_YAW_BIAS, -accel[0], accel[1], -accel[2], 0, 0, 0);
+		temp_bias =(temp_bias*(n-1)-gyro[2])/n; 
+		n++;
+}
+
+void GimbalEulerSystemMeasureUpdate(EulerSystemMeasure_t *IMU)
+{
+    IMU->RollAngle = INS_angle[2] / PI * 180.0f;
+    IMU->PitchAngle = INS_angle[1] / PI * 180.0f;
+    IMU->YawAngle = INS_angle[0] / PI * 180.0f;
+    IMU->RollSpeed = -INS_palstance[0];
+    IMU->PitchSpeed = INS_palstance[1];
+    IMU->YawSpeed = -INS_palstance[2];
+
+}
+#endif
 #ifdef IMU_DIRECTION_ryxz_XYZ
 void AHRS_update(float quat[4], float time, float gyro[3], float accel[3])
 {

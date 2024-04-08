@@ -7,16 +7,17 @@
 #define PARAMETER_FILE "AerialParam.h"
 #define KEYMAP_FILE "AerialKeyMap.h"
 
-#define MOTOR_OFFLINE_TIMEMAX 50
+#define MOTOR_OFFLINE_TIMEMAX 200
 #define REMOTE_OFFLINE_TIMEMAX 550
 #define AIMBOT_OFFLINE_TIMEMAX 550
 #define REFEREE_OFFLINE_TIMEMAX 3000
 
 #ifdef NewAerial
 // imu安装方向（c板）
-#define IMU_DIRECTION_xryrz_XYZ
+//#define IMU_DIRECTION_xryrz_XYZ
+#define IMU_DIRECTION_rxyrz_XYZ
 // gyro yaw轴偏置
-#define GYRO_YAW_BIAS 0.0035f//0.0F //-0.0055f
+#define GYRO_YAW_BIAS 0.005f//0.0035f//0.0F //-0.0055f
 // 主发射机构类型
 // master ID(slave id)
 #define YAW_MOTOR_ID 0x206   //(0x1ff)
@@ -33,12 +34,13 @@
 // 摩擦轮电机正向运动方向和弹道同向为1，反向为-1
 #define YAW_MOTOR_DIRECTION -1
 #define PITCH_MOTOR_DIRECTION 1
+
 #define ROTOR_MOTOR_DIRECTION -1
 #define AMMO_LEFT_MOTOR_DIRECTION -1
 #define AMMO_RIGHT_MOTOR_DIRECTION 1
 // 云台YAW轴零点和俯仰限幅
 #define YAW_ZERO_ECDANGLE 120.0f
-#define YAW_LEFT_LEN 150
+#define YAW_LEFT_LEN 100
 #define YAW_RIGHT_LEN 60
 #define PITCH_MIN_ANGLE -30.0f
 #define PITCH_MAX_ANGLE 35.0f

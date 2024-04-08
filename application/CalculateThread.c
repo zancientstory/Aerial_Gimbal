@@ -15,6 +15,7 @@
 #include "AerialKeyMap.h"
 #include "Setting.h"
 #include "bsp_snail.h"
+//#include "OLED.h"
 #include PARAMETER_FILE
 #include KEYMAP_FILE
 
@@ -43,6 +44,7 @@ void AmmoCommandUpdate2(void);
 extern ImuPacketMini_t ImuPackageMini;
 int16_t minus = 0;
 
+
 void CalculateThread(void const *pvParameters)
 {
     osDelay(500);
@@ -60,7 +62,7 @@ void CalculateThread(void const *pvParameters)
         GetAimbotCommand(&Aimbot);            // 获取自瞄指令
         RefereeInfUpdate(&Referee);           // 获取裁判系统信息 包括枪口的限制
         DeviceOfflineMonitorUpdate(&Offline); // 获取模块离线信息
-
+				//Display_Error(&Offline);
         LoopFifoFp32_push(&Gimbal.ImuBuffer.YawLoopPointer, Gimbal.Imu.YawAngle);
         LoopFifoFp32_push(&Gimbal.ImuBuffer.PitchLoopPointer, Gimbal.Imu.PitchAngle); // 陀螺仪数据入栈
 
@@ -77,7 +79,7 @@ void CalculateThread(void const *pvParameters)
         GimbalCommandUpdate(); // 指令的转换
         RotorCommandUpdate();  // 拨盘控制转换
         AmmoCommandUpdate();   // 发射部分控制转化
-        AmmoCommandUpdate2();  // 使用snail作为摩擦轮
+//        AmmoCommandUpdate2();  // 使用snail作为摩擦轮
 
         GimbalMotorControl(Gimbal.Output.Yaw * YAW_MOTOR_DIRECTION,
                            Gimbal.Output.Pitch * PITCH_MOTOR_DIRECTION,
@@ -286,38 +288,38 @@ void GimbalFireModeUpdate(void)
 //                Gimbal.FireMode = GM_FIRE_READY;
 //            }
 //        }
-//}
-        //        //  异常射击模式的状态机，用于反堵转
-        //        else if (Gimbal.FireMode == GM_FIRE_LAGGING)
-        //        {
-        //            if (gimbal_reverse_countdown > 0)
-        //            {
-        //                gimbal_reverse_countdown--;
-        //            }
-        //            else
-        //            {
-        //                Gimbal.FireMode = GM_FIRE_BUSY;
-        //            }
-        //        }
-        //        //  堵转计数
-        //        if ((Gimbal.FireMode == GM_FIRE_BUSY) && (Gimbal.MotorMeasure.ShootMotor.RotorMotorSpeed < 100))
-        //        {
-        //            gimbal_lagging_counter++;
-        //        }
-        //        else
-        //        {
-        //            gimbal_lagging_counter = 0;
-        //        }
 
-        //        //  触发反堵转状态机
-        //        if (gimbal_lagging_counter > ROTOR_LAGGING_COUNTER_MAX)
-        //        { // ROTOR_LAGGING_COUNTER_MAX
-        //            gimbal_lagging_counter = 0;
-        //            gimbal_reverse_countdown = ROTOR_TIMESET_RESERVE;
-        //            Gimbal.FireMode = GM_FIRE_LAGGING;
-        //        }
-//    }
-//    else
+//        //  异常射击模式的状态机，用于反堵转
+//        else if (Gimbal.FireMode == GM_FIRE_LAGGING)
+//        {
+//            if (gimbal_reverse_countdown > 0)
+//            {
+//               gimbal_reverse_countdown--;
+//            }
+//            else
+//            {
+//                Gimbal.FireMode = GM_FIRE_BUSY;
+//            }
+//        }
+//        //  堵转计数
+//        if ((Gimbal.FireMode == GM_FIRE_BUSY) && (Gimbal.MotorMeasure.ShootMotor.RotorMotorSpeed < 100))
+//        {
+//            gimbal_lagging_counter++;
+//        }
+//        else
+//        {
+//            gimbal_lagging_counter = 0;
+//        }
+
+//        //  触发反堵转状态机
+//        if (gimbal_lagging_counter > ROTOR_LAGGING_COUNTER_MAX)
+//        { // ROTOR_LAGGING_COUNTER_MAX
+//            gimbal_lagging_counter = 0;
+//            gimbal_reverse_countdown = ROTOR_TIMESET_RESERVE;
+//            Gimbal.FireMode = GM_FIRE_LAGGING;
+//        }
+//			}
+//		else
 //    {
 //        Gimbal.FireMode = GM_FIRE_UNABLE;
 //    }
@@ -501,18 +503,18 @@ void RotorPIDUpdate(void)
     {
         return;
     }
-    if ((FMthis == GM_FIRE_READY) || (FMthis == GM_FIRE_COOLING))
-    {
-        PID_init(&Gimbal.Pid.Rotor, PID_POSITION, ROTOR_STOP, M2006_MAX_OUTPUT, M2006_MAX_IOUTPUT);
-    }
-    else if (FMthis == GM_FIRE_BUSY)
+//    if (FMthis == GM_FIRE_READY)
+//    {
+//        PID_init(&Gimbal.Pid.Rotor, PID_POSITION, ROTOR_STOP, M2006_MAX_OUTPUT, M2006_MAX_IOUTPUT);
+//    }
+    if (FMthis == GM_FIRE_BUSY)
     {
         PID_init(&Gimbal.Pid.Rotor, PID_POSITION, ROTOR_FORWARD, M2006_MAX_OUTPUT, M2006_MAX_IOUTPUT);
     }
-    else if (FMthis == GM_FIRE_LAGGING)
-    {
-        PID_init(&Gimbal.Pid.Rotor, PID_POSITION, ROTOR_BACK, M2006_MAX_OUTPUT, M2006_MAX_IOUTPUT);
-    }
+//    else if (FMthis == GM_FIRE_LAGGING)
+//    {
+//        PID_init(&Gimbal.Pid.Rotor, PID_POSITION, ROTOR_BACK, M2006_MAX_OUTPUT, M2006_MAX_IOUTPUT);
+//    }
     else
     {
         PID_init(&Gimbal.Pid.Rotor, PID_POSITION, ROTOR_UNABLE, M2006_MAX_OUTPUT, M2006_MAX_IOUTPUT);
@@ -520,29 +522,10 @@ void RotorPIDUpdate(void)
 
     FMlast = FMthis;
 }
-
-// uint8_t MSthis = 0;
-// uint8_t MSlast = 0;
 void AmmoPIDUpdate(void)
 {
-    //    MSthis = Referee.shooter_id1_17mm_speed_limit; // Gimbal.Referee.MaxSpeed;
-
-    //    if (MSthis != MSlast)
-    //    {
-    //        switch (MSthis)
-    //        {
-    //        case 30:
     PID_init(&Gimbal.Pid.AmmoLeft, PID_POSITION, AMMO_LEFT_SPEED_30MS, M3508_MAX_OUTPUT, M3508_MAX_IOUTPUT);
     PID_init(&Gimbal.Pid.AmmoRight, PID_POSITION, AMMO_RIGHT_SPEED_30MS, M3508_MAX_OUTPUT, M3508_MAX_IOUTPUT);
-    //            break;
-    //        default:
-    //            PID_init(&Gimbal.Pid.AmmoLeft, PID_POSITION, DEFAULT_AMMOL_PID, M3508_MAX_OUTPUT, M3508_MAX_IOUTPUT);
-    //            PID_init(&Gimbal.Pid.AmmoRight, PID_POSITION, DEFAULT_AMMOR_PID, M3508_MAX_OUTPUT, M3508_MAX_IOUTPUT);
-    //            break;
-    //        }
-    //    }
-
-    //    MSlast = MSthis;
 }
 
 void GimbalMeasureUpdate(void)
@@ -615,10 +598,6 @@ void RotorCommandUpdate(void)
     {
         Gimbal.Command.Rotor = ROTOR_SPEEDSET_FORWARD * ROTOR_MOTOR_DIRECTION;
     }
-//    else if (Gimbal.FireMode == GM_FIRE_LAGGING)
-//    {
-//        Gimbal.Command.Rotor = ROTOR_SPEEDSET_BACKWARD * (-ROTOR_MOTOR_DIRECTION);
-//    }
     else if (Gimbal.FireMode == GM_FIRE_UNABLE)
     {
         Gimbal.Command.Rotor = 0;
@@ -629,40 +608,40 @@ void RotorCommandUpdate(void)
     {
         Gimbal.Command.Rotor = 0;
     }
-
     Gimbal.Output.Rotor = PID_calc(&Gimbal.Pid.Rotor, Gimbal.MotorMeasure.ShootMotor.RotorMotorSpeed, Gimbal.Command.Rotor);
 }
-
+int AMMO_SPEEDSET_30MS_LEFT = 7900;
+int AMMO_SPEEDSET_30MS_RIGHT = 7900;
 void AmmoCommandUpdate(void)
 {
-    if (Gimbal.FireMode == GM_FIRE_UNABLE)
+    if (Gimbal.StateMachine == GM_NO_FORCE || Gimbal.StateMachine == GM_INIT)
     {
         Gimbal.Command.AmmoLeft = 0;
         Gimbal.Command.AmmoRight = 0;
         Gimbal.Output.AmmoLeft = 0;
         Gimbal.Output.AmmoRight = 0;
-        return;
     }
-    //    switch (MSthis)
-    //    {
-    //    case 30:
+		else if(Gimbal.StateMachine == GM_TEST)
+		{
+		Gimbal.Command.AmmoLeft = 0;
+    Gimbal.Command.AmmoRight = 0;
     Gimbal.Output.AmmoLeft = PID_calc(&Gimbal.Pid.AmmoLeft,
                                       Gimbal.MotorMeasure.ShootMotor.AmmoLeftMotorSpeed,
-                                      AMMO_SPEEDSET_30MS * AMMO_LEFT_MOTOR_DIRECTION);
+                                      0);
     Gimbal.Output.AmmoRight = PID_calc(&Gimbal.Pid.AmmoRight,
                                        Gimbal.MotorMeasure.ShootMotor.AmmoRightMotorSpeed,
-                                       AMMO_SPEEDSET_30MS * AMMO_RIGHT_MOTOR_DIRECTION);
-    //        break;
-
-    //    default:
-    //        Gimbal.Output.AmmoLeft = PID_calc(&Gimbal.Pid.AmmoLeft,
-    //                                          Gimbal.MotorMeasure.ShootMotor.AmmoLeftMotorSpeed,
-    //                                          DEFAULT_AMMO_SPEEDSET * AMMO_LEFT_MOTOR_DIRECTION);
-    //        Gimbal.Output.AmmoRight = PID_calc(&Gimbal.Pid.AmmoRight,
-    //                                           Gimbal.MotorMeasure.ShootMotor.AmmoRightMotorSpeed,
-    //                                           DEFAULT_AMMO_SPEEDSET * AMMO_RIGHT_MOTOR_DIRECTION);
-    //        break;
-    //    }
+                                       0);
+		}
+		else if(Gimbal.StateMachine == GM_MATCH)
+		{
+    Gimbal.Output.AmmoLeft = PID_calc(&Gimbal.Pid.AmmoLeft,
+                                      Gimbal.MotorMeasure.ShootMotor.AmmoLeftMotorSpeed,
+                                      AMMO_SPEEDSET_30MS_LEFT * AMMO_LEFT_MOTOR_DIRECTION);
+    Gimbal.Output.AmmoRight = PID_calc(&Gimbal.Pid.AmmoRight,
+                                       Gimbal.MotorMeasure.ShootMotor.AmmoRightMotorSpeed,
+                                       AMMO_SPEEDSET_30MS_RIGHT * AMMO_RIGHT_MOTOR_DIRECTION);
+		}
+		return;
 }
 void AmmoCommandUpdate2(void)
 {
