@@ -21,11 +21,17 @@
                 "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\device",
                 "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\Config",
                 "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\algorithm",
+                "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\USB_DEVICE\\App",
+                "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\USB_DEVICE\\Target",
+                "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+                "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\Middlewares\\ST\\STM32_USB_Device_Library\\Class\\CDC\\Inc",
                 "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\MDK-ARM",
                 "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\Core\\Src",
                 "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\Drivers\\STM32F4xx_HAL_Driver\\Src",
                 "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\Middlewares\\Third_Party\\FreeRTOS\\Source",
-                "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\MemMang"
+                "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\MemMang",
+                "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Src",
+                "c:\\Users\\chaos\\Desktop\\Aerial_Gimbal\\Middlewares\\ST\\STM32_USB_Device_Library\\Class\\CDC\\Src"
             ],
             "defines": [
                 "USE_HAL_DRIVER",

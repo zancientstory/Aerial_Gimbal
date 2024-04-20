@@ -41,27 +41,15 @@ extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 
-RefereeChassisPowerShootHeat_t RefereeChassisPowerShootHeat;
+// RefereeChassisPowerShootHeat_t RefereeChassisPowerShootHeat;
 
 void PitchMotorOfflineCounterUpdate(void);
 void YawMotorOfflineCounterUpdate(void);
 void RotorMotorOfflineCounterUpdate(void);
 void AmmoLeftMotorMotorOfflineCounterUpdate(void);
 void AmmoRightMotorMotorOfflineCounterUpdate(void);
-void AimbotStateNodeOfflineCounterUpdate(void);
 void AimbotDataNodeOfflineCounterUpdate(void);
-void RefereePowerHeatNode0OfflineCounterUpdate(void);
-void RefereePowerHeatNode1OfflineCounterUpdate(void);
-void RefereeAmmoSpeedNode0OfflineCounterUpdate(void);
-void RefereeAmmoSpeedNode1OfflineCounterUpdate(void);
-void RefereeAmmoSpeedNode2OfflineCounterUpdate(void);
-void RefereeAmmoLimitNode0OfflineCounterUpdate(void);
-void RefereeAmmoLimitNode1OfflineCounterUpdate(void);
-void RefereeAmmoLimitNode2OfflineCounterUpdate(void);
-void RefereeSelfStateNodeOfflineCounterUpdate(void);
 void RemoteOfflineCounterUpdate(void);
-
-uint32_t RefereeInterpolationTimer = 0;
 
 /**
  * @brief          hal CAN fifo call back, receive motor data
@@ -73,9 +61,6 @@ uint32_t RefereeInterpolationTimer = 0;
  * @param[in]      hcan:CAN¾ä±úÖ¸Õë
  * @retval         none
  */
-uint16_t p;
-uint32_t time_stap = 0;
-extern AimbotCommand_t AimbotCommand;
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
@@ -122,16 +107,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         MotorProcess(rx_header.StdId, hcan, rx_data);
         break;
     }
-    case 0x106:
-    {
-        AimbotStateNodeOfflineCounterUpdate();
-        AimbotStateUpdate((AimbotStateNoraml_t *)rx_data);
-    }
-    case 0x108:
-    {
-        AimbotDataNodeOfflineCounterUpdate();
-        AimbotCommandUpdate((AimbotCommandNoraml_t *)rx_data);
-    }
 
     default:
     {
@@ -150,36 +125,35 @@ uint32_t GetSystemTimer(void)
     return SystemTimer;
 }
 
-void GimbalMotorCommandSend(void);
-void GimbalRequestStatePacketSend(void);
-void GimbalImuPacketSend(void);
+// void GimbalRequestStatePacketSend(void);
 
 void CommuniteOfflineCounterUpdate(void);
 void CommuniteOfflineStateUpdate(void);
-
+/**
+ * @brief this function add systime,update communication with device
+ */
 void TimerTaskLoop1000Hz(void)
 {
     SystemTimer++;
-    time_stap++;
-    //    GimbalMotorCommandSend();
     CommuniteOfflineCounterUpdate();
     CommuniteOfflineStateUpdate();
-
-    RefereeInterpolationTimer++;
-    if ((RefereeInterpolationTimer % 100) == 0)
-    {
-    }
 }
-
+void GimbalImuUsbSend(void);
+/**
+ * @brief send imu data to nuc
+ */
 void TimerTaskLoop500Hz(void)
 {
-    GimbalImuPacketSend();
+    GimbalImuUsbSend();
 }
+/**
+ * @brief send debug information to usart1
+ */
 void TimerTaskLoop100Hz(void)
 {
-    GimbalRequestStatePacketSend();
-     printf("%f,%f,%f\n", Gimbal.MotorMeasure.ShootMotor.AmmoLeftMotorSpeed, Gimbal.MotorMeasure.ShootMotor.AmmoRightMotorSpeed, shoot_data_t.initial_speed);
-		//printf("%f\n",Gimbal.MotorMeasure.ShootMotor.RotorMotorSpeed);
+    // GimbalRequestStatePacketSend();
+    printf("%f,%f,%f\n", Gimbal.MotorMeasure.ShootMotor.AmmoLeftMotorSpeed, Gimbal.MotorMeasure.ShootMotor.AmmoRightMotorSpeed, shoot_data_t.initial_speed);
+    // printf("%f\n",Gimbal.MotorMeasure.ShootMotor.RotorMotorSpeed);
 }
 
 void TIM3_IRQHandler(void)
@@ -221,64 +195,36 @@ void TIM6_DAC_IRQHandler(void)
     /* USER CODE END TIM6_DAC_IRQn 1 */
 }
 
-GimbalOutput_t GimbalMotorOutput;
-void GimbalMotorCommandSend(void)
+void GimbalImuUsbSend(void)
 {
-    GetGimbalMotorOutput(&GimbalMotorOutput);
-    GimbalMotorControl(GimbalMotorOutput.Yaw * YAW_MOTOR_DIRECTION,
-                       GimbalMotorOutput.Pitch * PITCH_MOTOR_DIRECTION,
-                       GimbalMotorOutput.Rotor,
-                       GimbalMotorOutput.AmmoLeft,
-                       GimbalMotorOutput.AmmoRight);
-}
-
-// ImuPacketNormal_t ImuPacket;
-ImuPacketMini_t ImuPackageMini;
-float quat[4];
-void GimbalImuPacketSend(void)
-{
-    //    ImuPacket.TimeStamp = SystemTimer;
-    //    GetCurrentQuaternion(ImuPacket.Quaternion);
-    //    CanSendMessage(&COMMUNICATE_CANPORT, 0x100, 4, (uint8_t *)&ImuPacket.TimeStamp);
-    //    CanSendMessage(&COMMUNICATE_CANPORT, IMU_PACKET_DATA0_ID, 8, (uint8_t *)&ImuPacket.Quaternion[0]);
-    //    CanSendMessage(&COMMUNICATE_CANPORT, IMU_PACKET_DATA1_ID, 8, (uint8_t *)&ImuPacket.Quaternion[2]);
-
-    ImuPackageMini.TimeStamp = SystemTimer;
+    GimabalImu.TimeStamp = SystemTimer;
+    float quat[4];
     GetCurrentQuaternion(quat);
-    ImuPackageMini.q0 = quat[0] * 32767;
-    ImuPackageMini.q1 = quat[1] * 32767;
-    ImuPackageMini.q2 = quat[2] * 32767;
-    ImuPackageMini.q3 = quat[3] * 32767;
-    CanSendMessage(&COMMUNICATE_CANPORT, 0x0FF, 8, (uint8_t *)&ImuPackageMini.q0);
-    CanSendMessage(&COMMUNICATE_CANPORT, 0x100, 4, (uint8_t *)&ImuPackageMini.TimeStamp);
+    GimabalImu.q0 = quat[0];
+    GimabalImu.q1 = quat[1];
+    GimabalImu.q2 = quat[2];
+    GimabalImu.q3 = quat[3];
+    GimabalImu.robot_id = Referee.robot_id;
+
+    UsbSendMessage((uint8_t *)&GimabalImu, (uint16_t)sizeof(GimabalImu), GIMBAL_IMU_1_ID);
 }
 
-GimbalRequestState_t RequestStatePacket;
-void GimbalRequestStatePacketSend(void)
-{
-    GetGimbalRequestState(&RequestStatePacket);
-}
+// GimbalRequestState_t RequestStatePacket;
+// void GimbalRequestStatePacketSend(void)
+//{
+//     GetGimbalRequestState(&RequestStatePacket);
+// }
 
 OfflineCounter_t OfflineCounter;
 OfflineMonitor_t OfflineMonitor;
 void CommuniteOfflineCounterUpdate(void)
 {
-    // OfflineCounter.PitchMotor++;
-     OfflineCounter.YawMotor++;
+    OfflineCounter.PitchMotor++;
+    OfflineCounter.YawMotor++;
     OfflineCounter.RotorMotor++;
     OfflineCounter.AmmoLeftMotor++;
     OfflineCounter.AmmoRightMotor++;
-    OfflineCounter.AimbotStateNode++;
     OfflineCounter.AimbotDataNode++;
-    OfflineCounter.RefereePowerHeatNode0++;
-    OfflineCounter.RefereePowerHeatNode1++;
-    OfflineCounter.RefereeAmmoSpeedNode0++;
-    OfflineCounter.RefereeAmmoSpeedNode1++;
-    OfflineCounter.RefereeAmmoSpeedNode2++;
-    OfflineCounter.RefereeAmmoLimitNode0++;
-    OfflineCounter.RefereeAmmoLimitNode1++;
-    OfflineCounter.RefereeAmmoLimitNode2++;
-    OfflineCounter.RefereeSelfStateNode++;
     OfflineCounter.Remote++;
 }
 
@@ -327,14 +273,6 @@ void CommuniteOfflineStateUpdate(void)
     }
 
     // CAN Bus Node
-    if (OfflineCounter.AimbotStateNode > MOTOR_OFFLINE_TIMEMAX)
-    {
-        OfflineMonitor.AimbotStateNode = 1;
-    }
-    else
-    {
-        OfflineMonitor.AimbotStateNode = 0;
-    }
     if (OfflineCounter.AimbotDataNode > MOTOR_OFFLINE_TIMEMAX)
     {
         OfflineMonitor.AimbotDataNode = 1;
@@ -342,78 +280,6 @@ void CommuniteOfflineStateUpdate(void)
     else
     {
         OfflineMonitor.AimbotDataNode = 0;
-    }
-    if (OfflineCounter.RefereePowerHeatNode0 > MOTOR_OFFLINE_TIMEMAX)
-    {
-        OfflineMonitor.RefereePowerHeatNode0 = 1;
-    }
-    else
-    {
-        OfflineMonitor.RefereePowerHeatNode0 = 0;
-    }
-    if (OfflineCounter.RefereePowerHeatNode1 > MOTOR_OFFLINE_TIMEMAX)
-    {
-        OfflineMonitor.RefereePowerHeatNode1 = 1;
-    }
-    else
-    {
-        OfflineMonitor.RefereePowerHeatNode1 = 0;
-    }
-    if (OfflineCounter.RefereeAmmoSpeedNode0 > MOTOR_OFFLINE_TIMEMAX)
-    {
-        OfflineMonitor.RefereeAmmoSpeedNode0 = 1;
-    }
-    else
-    {
-        OfflineMonitor.RefereeAmmoSpeedNode0 = 0;
-    }
-    if (OfflineCounter.RefereeAmmoSpeedNode1 > MOTOR_OFFLINE_TIMEMAX)
-    {
-        OfflineMonitor.RefereeAmmoSpeedNode1 = 1;
-    }
-    else
-    {
-        OfflineMonitor.RefereeAmmoSpeedNode1 = 0;
-    }
-    if (OfflineCounter.RefereeAmmoSpeedNode2 > MOTOR_OFFLINE_TIMEMAX)
-    {
-        OfflineMonitor.RefereeAmmoSpeedNode2 = 1;
-    }
-    else
-    {
-        OfflineMonitor.RefereeAmmoSpeedNode2 = 0;
-    }
-    if (OfflineCounter.RefereeAmmoLimitNode0 > MOTOR_OFFLINE_TIMEMAX)
-    {
-        OfflineMonitor.RefereeAmmoLimitNode0 = 1;
-    }
-    else
-    {
-        OfflineMonitor.RefereeAmmoLimitNode0 = 0;
-    }
-    if (OfflineCounter.RefereeAmmoLimitNode1 > MOTOR_OFFLINE_TIMEMAX)
-    {
-        OfflineMonitor.RefereeAmmoLimitNode1 = 1;
-    }
-    else
-    {
-        OfflineMonitor.RefereeAmmoLimitNode1 = 0;
-    }
-    if (OfflineCounter.RefereeAmmoLimitNode2 > MOTOR_OFFLINE_TIMEMAX)
-    {
-        OfflineMonitor.RefereeAmmoLimitNode2 = 1;
-    }
-    else
-    {
-        OfflineMonitor.RefereeAmmoLimitNode2 = 0;
-    }
-    if (OfflineCounter.RefereeSelfStateNode > MOTOR_OFFLINE_TIMEMAX)
-    {
-        OfflineMonitor.RefereeSelfStateNode = 1;
-    }
-    else
-    {
-        OfflineMonitor.RefereeSelfStateNode = 0;
     }
 
     // Remote
@@ -457,59 +323,9 @@ void AmmoRightMotorMotorOfflineCounterUpdate(void)
     OfflineCounter.AmmoRightMotor = 0;
 }
 
-void AimbotStateNodeOfflineCounterUpdate(void)
-{
-    OfflineCounter.AimbotStateNode = 0;
-}
-
 void AimbotDataNodeOfflineCounterUpdate(void)
 {
     OfflineCounter.AimbotDataNode = 0;
-}
-
-void RefereePowerHeatNode0OfflineCounterUpdate(void)
-{
-    OfflineCounter.RefereePowerHeatNode0 = 0;
-}
-
-void RefereePowerHeatNode1OfflineCounterUpdate(void)
-{
-    OfflineCounter.RefereePowerHeatNode1 = 0;
-}
-
-void RefereeAmmoSpeedNode0OfflineCounterUpdate(void)
-{
-    OfflineCounter.RefereeAmmoSpeedNode0 = 0;
-}
-
-void RefereeAmmoSpeedNode1OfflineCounterUpdate(void)
-{
-    OfflineCounter.RefereeAmmoSpeedNode1 = 0;
-}
-
-void RefereeAmmoSpeedNode2OfflineCounterUpdate(void)
-{
-    OfflineCounter.RefereeAmmoSpeedNode2 = 0;
-}
-
-void RefereeAmmoLimitNode0OfflineCounterUpdate(void)
-{
-    OfflineCounter.RefereeAmmoLimitNode0 = 0;
-}
-
-void RefereeAmmoLimitNode1OfflineCounterUpdate(void)
-{
-    OfflineCounter.RefereeAmmoLimitNode1 = 0;
-}
-
-void RefereeAmmoLimitNode2OfflineCounterUpdate(void)
-{
-    OfflineCounter.RefereeAmmoLimitNode2 = 0;
-}
-
-void RefereeSelfStateNodeOfflineCounterUpdate(void)
-{
-    OfflineCounter.RefereeSelfStateNode = 0;
 }
 
 void RemoteOfflineCounterUpdate(void)

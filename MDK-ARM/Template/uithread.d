@@ -61,4 +61,5 @@ template/uithread.o: ..\application\UIThread.c ..\Core\Inc\main.h \
   C:\Program\ Files\ (x86)\keil5\ARM\ARMCLANG\include\stdarg.h \
   ..\application\CalculateThread.h ..\application\InterruptService.h \
   ..\Config\AerialKeyMap.h ..\device\Remote.h ..\device\AimbotCan.h \
-  ..\algorithm\PID\pid.h ..\application\UIThread.h
+  ..\algorithm\PID\pid.h ..\device\Usb.h ..\Config\UsbPackage.h \
+  ..\application\UIThread.h

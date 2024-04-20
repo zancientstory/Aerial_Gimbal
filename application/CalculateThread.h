@@ -6,6 +6,7 @@
 #include "InterruptService.h"
 #include "AimbotCan.h"
 #include "pid.h"
+#include "Usb.h"
 typedef struct
 {
     float Yaw;
@@ -19,7 +20,7 @@ typedef struct
 {
     int16_t Yaw;
     int16_t Pitch;
-		float Damiao;
+    float Damiao;
     int16_t Rotor;
     int16_t AmmoLeft;
     int16_t AmmoRight;
@@ -32,7 +33,7 @@ typedef struct
     pid_type_def Rotor;
     pid_type_def AmmoLeft;
     pid_type_def AmmoRight;
-		
+
 } GimbalPID_t;
 
 typedef enum
@@ -98,13 +99,12 @@ typedef struct
     ImuBuffer_t ImuBuffer;
 } Gimbal_t;
 
-extern Gimbal_t Gimbal;        // 云台状态结构
-extern AimbotCommand_t Aimbot; // 自瞄数据
-
+extern Gimbal_t Gimbal; // 云台状态结构
+extern ext_game_robot_status_t Referee;
 extern void CalculateThread(void const *pvParameters);
 
 extern void GetGimbalMotorOutput(GimbalOutput_t *out);
-extern void GetGimbalRequestState(GimbalRequestState_t *RequestState);
+// extern void GetGimbalRequestState(GimbalRequestState_t *RequestState);
 
 extern OfflineMonitor_t Offline;
 

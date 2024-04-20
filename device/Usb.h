@@ -35,4 +35,6 @@ extern void UsbSendMessage(uint8_t* address, uint16_t len, uint8_t id);
  */
 extern const AimbotFrame_SCM_t *get_usb_aimbot_command_point(void);
 
+extern GimabalImuFrame_SCM_t GimabalImu;
+extern AimbotFrame_SCM_t Aimbot;
 #endif

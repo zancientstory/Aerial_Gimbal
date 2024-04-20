@@ -17,7 +17,7 @@
 //#define IMU_DIRECTION_xryrz_XYZ
 #define IMU_DIRECTION_rxyrz_XYZ
 // gyro yaw轴偏置
-#define GYRO_YAW_BIAS 0.005f//0.0035f//0.0F //-0.0055f
+#define GYRO_YAW_BIAS 0.0035f//0.0035f//0.0F //-0.0055f
 // 主发射机构类型
 // master ID(slave id)
 #define YAW_MOTOR_ID 0x206   //(0x1ff)
@@ -40,8 +40,10 @@
 #define AMMO_RIGHT_MOTOR_DIRECTION 1
 // 云台YAW轴零点和俯仰限幅
 #define YAW_ZERO_ECDANGLE 120.0f
-#define YAW_LEFT_LEN 100
-#define YAW_RIGHT_LEN 60
+//#define YAW_LEFT_LEN 100
+//#define YAW_RIGHT_LEN 60
+#define YAW_LEFT_LEN 30
+#define YAW_RIGHT_LEN 30
 #define PITCH_MIN_ANGLE -30.0f
 #define PITCH_MAX_ANGLE 35.0f
 // 默认摩擦轮速度

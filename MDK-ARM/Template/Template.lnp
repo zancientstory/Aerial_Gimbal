@@ -73,6 +73,7 @@
 "template\refereebehaviour.o"
 "template\client_ui.o"
 "template\oled.o"
+"template\usb.o"
 "template\usb_device.o"
 "template\usbd_desc.o"
 "template\usbd_cdc_if.o"

@@ -8,17 +8,15 @@
  */
 #include "Usb.h"
 #include "UsbPackage.h"
-#include "Offline.h"
+#include "InterruptService.h"
 
 #include "usb_device.h"
 #include "usbd_cdc_if.h"
 
-GimabalDataFrame_SCM_t GimabalData;
-NucControlFrame_SCM_t NucControl;
+extern OfflineMonitor_t OfflineMonitor;
+
 GimabalImuFrame_SCM_t GimabalImu;
 AimbotFrame_SCM_t Aimbot;
-
-extern OfflineMonitor_t OfflineMonitor;
 
 /**
  * @brief          Usb接收数据
@@ -32,14 +30,11 @@ void UsbReceive(uint8_t *rx_data, uint8_t len)
 	{
 		switch (rx_data[1])
 		{
-		case NUC_CONTROL_DATA_ID:
-			memcpy(&NucControl, rx_data, len);
-			break;
-		case AIMBOT_DATA_1_ID:
+		case AIMBOT_DATA_0_ID:
 			AimbotDataNodeOfflineCounterUpdate();
 			memcpy(&Aimbot, rx_data, len);
-			Aimbot.YawRelativeAngle = Aimbot.Yaw / 32768.0f * 180.0f;
-			Aimbot.PitchRelativeAngle = Aimbot.Pitch / 32768.0f * 180.0f;
+//			Aimbot.YawRelativeAngle = Aimbot.Yaw / 32768.0f * 180.0f;
+//			Aimbot.PitchRelativeAngle = Aimbot.Pitch / 32768.0f * 180.0f;
 			break;
 		default:
 			break;
@@ -68,5 +63,5 @@ void UsbSendMessage(uint8_t *address, uint16_t len, uint8_t id)
  */
 const AimbotFrame_SCM_t *get_usb_aimbot_command_point(void)
 {
-    return &Aimbot;
+	return &Aimbot;
 }

@@ -409,6 +409,11 @@
               <FileType>5</FileType>
               <FilePath>..\Config\AerialParam.h</FilePath>
             </File>
+            <File>
+              <FileName>UsbPackage.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Config\UsbPackage.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1129,6 +1134,11 @@
               <FileName>OLED.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\device\OLED.c</FilePath>
+            </File>
+            <File>
+              <FileName>Usb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\device\Usb.c</FilePath>
             </File>
           </Files>
         </Group>

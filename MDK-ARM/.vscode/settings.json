@@ -20,7 +20,10 @@
         "aimbotcan.h": "c",
         "refereebehaviour.h": "c",
         "setting.h": "c",
-        "client_ui.h": "c"
+        "client_ui.h": "c",
+        "usbpackage.h": "c",
+        "interruptservice.h": "c",
+        "usb.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

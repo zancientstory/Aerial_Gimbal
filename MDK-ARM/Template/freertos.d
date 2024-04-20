@@ -58,7 +58,7 @@ template/freertos.o: ..\Core\Src\freertos.c \
   ..\device\RefereeBehaviour.h ..\Core\Inc\gpio.h \
   ..\application\InterruptService.h ..\Config\AerialKeyMap.h \
   ..\device\Remote.h ..\device\AimbotCan.h ..\algorithm\PID\pid.h \
-  ..\application\UIThread.h ..\application\RefereeThread.h \
-  ..\algorithm\fifo.h \
+  ..\device\Usb.h ..\Config\UsbPackage.h ..\application\UIThread.h \
+  ..\application\RefereeThread.h ..\algorithm\fifo.h \
   C:\Program\ Files\ (x86)\keil5\ARM\ARMCLANG\include\stdio.h \
   C:\Program\ Files\ (x86)\keil5\ARM\ARMCLANG\include\stdlib.h

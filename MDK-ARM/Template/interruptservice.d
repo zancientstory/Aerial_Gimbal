@@ -44,6 +44,6 @@ template/interruptservice.o: ..\application\InterruptService.c \
   ..\device\RefereeBehaviour.h ..\Core\Inc\gpio.h ..\Config\CanPacket.h \
   C:\Program\ Files\ (x86)\keil5\ARM\ARMCLANG\include\string.h \
   ..\device\AimbotCan.h ..\application\CalculateThread.h \
-  ..\algorithm\PID\pid.h ..\application\AttitudeThread.h \
-  ..\bsp\bsp_can.h \
+  ..\algorithm\PID\pid.h ..\device\Usb.h ..\Config\UsbPackage.h \
+  ..\application\AttitudeThread.h ..\bsp\bsp_can.h \
   C:\Program\ Files\ (x86)\keil5\ARM\ARMCLANG\include\stdio.h
