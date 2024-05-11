@@ -2,8 +2,8 @@
 #define _INFANTRY4_KEY_MAP_
 
 #include "Remote.h"
-#define YAW_REMOTE_SENS 0.1f
-#define PITCH_REMOTE_SENS 0.1f
+#define YAW_REMOTE_SENS 0.04f
+#define PITCH_REMOTE_SENS 0.09f
 #define YAW_MOUSE_SENS 50
 #define PITCH_MOUSE_SENS 30
 

@@ -39,14 +39,15 @@ void GimbalCommandUpdate(void);
 void RotorCommandUpdate(void);
 void AmmoCommandUpdate(void);
 void AmmoCommandUpdate2(void);
+void dm4310_rc_enable(void);
 void dm4310_circle_enable(void);
 void CalculateThread(void const *pvParameters)
 {
     osDelay(500);
     PID_init(&Gimbal.Pid.AmmoLeft, PID_POSITION, AMMO_LEFT_SPEED_30MS, M3508_MAX_OUTPUT, M3508_MAX_IOUTPUT); // 左右摩擦轮pid初始化
     PID_init(&Gimbal.Pid.AmmoRight, PID_POSITION, AMMO_RIGHT_SPEED_30MS, M3508_MAX_OUTPUT, M3508_MAX_IOUTPUT);
-    //Init_Snail();
-		HAL_Delay(1500);
+    // Init_Snail();
+    HAL_Delay(1500);
     dm4310_enable();
     //    LoopFifoFp32_init(&Gimbal.ImuBuffer.YawLoopPointer, Gimbal.ImuBuffer.YawAddress, 64); // 自瞄数据fifo初始化
     //    LoopFifoFp32_init(&Gimbal.ImuBuffer.PitchLoopPointer, Gimbal.ImuBuffer.PitchAddress, 64);
@@ -54,17 +55,19 @@ void CalculateThread(void const *pvParameters)
 
     while (1)
     {
-				
+
         Remote = *get_remote_control_point();       // 更新遥控器数据
         Aimbot_G = *get_usb_aimbot_command_point(); // 更新自瞄数据
         RefereeInfUpdate(&Referee);                 // 获取裁判系统信息 包括枪口的限制
-				dm4310_circle_enable();
+        //dm4310_rc_enable();                         // 遥控器强制使能dm4310（pitch）
+        dm4310_circle_enable();                     // 进入初始化模式的时候使能dm4310
         DeviceOfflineMonitorUpdate(&Offline);       // 获取模块离线信息
                                                     // Display_Error(&Offline);
                                                     //        LoopFifoFp32_push(&Gimbal.ImuBuffer.YawLoopPointer, Gimbal.Imu.YawAngle);
                                                     //        LoopFifoFp32_push(&Gimbal.ImuBuffer.PitchLoopPointer, Gimbal.Imu.PitchAngle); // 陀螺仪数据入栈
 
         GimbalStateMachineUpdate(); // 根据遥控器拨杆决定当前状态（无力，初始化，测试，比赛）
+        dm4310_circle_enable();     // 进入初始化模式的时候使能dm4310
         GimbalControlModeUpdate();  // 控制权
         GimbalFireModeUpdate();     // 开火状态转换
 
@@ -89,12 +92,26 @@ void CalculateThread(void const *pvParameters)
         osDelay(1);
     }
 }
+void dm4310_rc_enable(void)
+{
+    if (Remote.rc.s[1] == RC_SW_DOWN)
+    {
+        dm4310_enable();
+    }
+}
+uint8_t flag_damiao_enable = 0; // 0为未使能
 void dm4310_circle_enable(void)
 {
-	if(Remote.rc.s[1] == RC_SW_DOWN)
-	{
-		    dm4310_enable();
-	}
+    if (Gimbal.StateMachine == GM_INIT && flag_damiao_enable == 0)
+    {
+        dm4310_enable();
+        flag_damiao_enable = 1;
+    }
+    else if (Gimbal.StateMachine != GM_INIT)
+    {
+        flag_damiao_enable = 0;
+    }
+    return;
 }
 uint32_t gimbal_init_countdown = 0;    //  云台初始化倒计时器
 uint32_t gimbal_fire_countdown = 0;    //  云台射击拨盘转动倒计时器
@@ -200,15 +217,26 @@ void GimbalControlModeUpdate(void)
     // 比赛模式下
     if (Gimbal.StateMachine == GM_MATCH || Gimbal.StateMachine == GM_TEST)
     {
+				
         // 如果按下鼠标右键并且视觉发现目标，进入自瞄控制
         if (((Remote.mouse.press_r == PRESS) || (Remote.rc.s[1] == RC_SW_UP)) && (Offline.AimbotDataNode == DEVICE_ONLINE) && (Aimbot_G.AimbotState & AIMBOT_TARGET_INSIDE_OFFSET))
         {
             Gimbal.ControlMode = GM_AIMBOT_OPERATE; // 自瞄状态
+
         }
         else
         {
             Gimbal.ControlMode = GM_MANUAL_OPERATE; // 手动状态
+
         }
+				if((Remote.mouse.press_r == PRESS) || (Remote.rc.s[1] == RC_SW_UP))
+				{
+						GimabalImu.mode = 1;
+				}
+				else
+				{
+						GimabalImu.mode = 0;
+				}
     }
     else if (Gimbal.StateMachine == GM_INIT)
     {
@@ -515,7 +543,7 @@ void AmmoPIDUpdate(void)
 {
     PID_init(&Gimbal.Pid.AmmoLeft, PID_POSITION, AMMO_LEFT_SPEED_30MS, M3508_MAX_OUTPUT, M3508_MAX_IOUTPUT);
     PID_init(&Gimbal.Pid.AmmoRight, PID_POSITION, AMMO_RIGHT_SPEED_30MS, M3508_MAX_OUTPUT, M3508_MAX_IOUTPUT);
-}
+		}
 
 void GimbalMeasureUpdate(void)
 {
@@ -523,12 +551,21 @@ void GimbalMeasureUpdate(void)
     ShootMotorMeasureUpdate(&Gimbal.MotorMeasure.ShootMotor);
     GimbalEulerSystemMeasureUpdate(&Gimbal.Imu);
 }
-float yaw_zero_imu = 0; // 零点时，imu数据
+float yaw_zero_imu = 0.0f; // 零点时，imu数据
+//float pitch_dead_point = 0.0f;
 void GimbalCommandUpdate(void)
 {
     if (Gimbal.ControlMode == GM_MANUAL_OPERATE)
     {
         Gimbal.Command.Pitch -= GIMBAL_CMD_PITCH_KEYMAP;
+//				if(Gimbal.Command.Pitch>0)
+//				{
+//					Gimbal.Command.Pitch+=pitch_dead_point;
+//				}
+//				else
+//				{
+//					Gimbal.Command.Pitch -=pitch_dead_point;
+//				}
         if (Gimbal.Imu.YawAngle <= (yaw_zero_imu + YAW_RIGHT_LEN) && Gimbal.Imu.YawAngle >= yaw_zero_imu - YAW_LEFT_LEN)
         {
             Gimbal.Command.Yaw += GIMBAL_CMD_YAW_KEYMAP;
@@ -549,12 +586,12 @@ void GimbalCommandUpdate(void)
     }
     else if (Gimbal.ControlMode == GM_AIMBOT_OPERATE)
     {
-//        Gimbal.Command.Yaw = Aimbot_G.Yaw;
-//        Gimbal.Command.Pitch = Aimbot_G.Pitch;
-				Gimbal.Command.Pitch = Aimbot_G.PitchRelativeAngle;
-				Gimbal.Command.Yaw = Aimbot_G.YawRelativeAngle;
-        //Gimbal.Command.Yaw = loop_fp32_constrain(Gimbal.Command.Yaw, Gimbal.Imu.YawAngle - 180.0f, Gimbal.Imu.YawAngle + 180.0f);
-				Gimbal.Command.Yaw = fp32_constrain(Gimbal.Command.Yaw,yaw_zero_imu - YAW_LEFT_LEN, yaw_zero_imu + YAW_RIGHT_LEN);
+        //        Gimbal.Command.Yaw = Aimbot_G.Yaw;
+        //        Gimbal.Command.Pitch = Aimbot_G.Pitch;
+        Gimbal.Command.Pitch = Aimbot_G.PitchRelativeAngle;
+        Gimbal.Command.Yaw = Aimbot_G.YawRelativeAngle;
+        // Gimbal.Command.Yaw = loop_fp32_constrain(Gimbal.Command.Yaw, Gimbal.Imu.YawAngle - 180.0f, Gimbal.Imu.YawAngle + 180.0f);
+        Gimbal.Command.Yaw = fp32_constrain(Gimbal.Command.Yaw, yaw_zero_imu - YAW_LEFT_LEN, yaw_zero_imu + YAW_RIGHT_LEN);
         Gimbal.Command.Pitch = fp32_constrain(Gimbal.Command.Pitch, PITCH_MIN_ANGLE, PITCH_MAX_ANGLE);
         Gimbal.Output.Yaw = cascade_PID_calc(&Gimbal.Pid.Yaw, Gimbal.Imu.YawAngle, Gimbal.Imu.YawSpeed, Gimbal.Command.Yaw);
         Gimbal.Output.Damiao = cascade_PID_calc(&Gimbal.Pid.Pitch, Gimbal.Imu.PitchAngle, Gimbal.Imu.PitchSpeed, Gimbal.Command.Pitch);
@@ -608,8 +645,8 @@ void RotorCommandUpdate(void)
     }
     Gimbal.Output.Rotor = PID_calc(&Gimbal.Pid.Rotor, Gimbal.MotorMeasure.ShootMotor.RotorMotorSpeed, Gimbal.Command.Rotor);
 }
-int AMMO_SPEEDSET_30MS_LEFT = 7900;
-int AMMO_SPEEDSET_30MS_RIGHT = 7900;
+int AMMO_SPEEDSET_30MS_LEFT = 7550;//8100;
+int AMMO_SPEEDSET_30MS_RIGHT = 7550;//7950; // 7750;
 void AmmoCommandUpdate(void)
 {
     if (Gimbal.StateMachine == GM_NO_FORCE || Gimbal.StateMachine == GM_INIT)

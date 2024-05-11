@@ -1,4 +1,4 @@
-#include "InterruptService.h"
+	#include "InterruptService.h"
 #include "main.h"
 #include "Motor.h"
 #include "Remote.h"
@@ -152,7 +152,7 @@ void TimerTaskLoop500Hz(void)
 void TimerTaskLoop100Hz(void)
 {
     // GimbalRequestStatePacketSend();
-    printf("%f,%f,%f\n", Gimbal.MotorMeasure.ShootMotor.AmmoLeftMotorSpeed, Gimbal.MotorMeasure.ShootMotor.AmmoRightMotorSpeed, shoot_data_t.initial_speed);
+    //printf("%f,%f,%f\n", Gimbal.MotorMeasure.ShootMotor.AmmoLeftMotorSpeed, Gimbal.MotorMeasure.ShootMotor.AmmoRightMotorSpeed, shoot_data_t.initial_speed);
     // printf("%f\n",Gimbal.MotorMeasure.ShootMotor.RotorMotorSpeed);
 }
 
