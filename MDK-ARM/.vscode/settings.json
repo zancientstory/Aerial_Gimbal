@@ -23,7 +23,8 @@
         "client_ui.h": "c",
         "usbpackage.h": "c",
         "interruptservice.h": "c",
-        "usb.h": "c"
+        "usb.h": "c",
+        "crc8_crc16.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

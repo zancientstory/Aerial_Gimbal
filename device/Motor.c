@@ -109,7 +109,7 @@ void damiao_send_data_process(float torque, uint8_t *data)
     data[6] = ((kd_tmp & 0xF) << 4) | (tor_tmp >> 8);
     data[7] = tor_tmp;
 }
-static motor_measure_t YawMotorMeasure;
+ motor_measure_t YawMotorMeasure;
 static motor_measure_t PitchMotorMeasure;
 static motor_measure_t DamiaoPitchMotorMeasure;
 static motor_measure_t RotorMotorMeasure;

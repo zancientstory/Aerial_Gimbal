@@ -225,7 +225,7 @@ typedef __PACKED_STRUCT // 0x0301
     uint16_t data_cmd_id;
     uint16_t sender_id;
     uint16_t receiver_id;
-    /*uint8_t user_data[x]; */
+    uint8_t user_data[1];
 }
 ext_student_interactive_data_t;
 

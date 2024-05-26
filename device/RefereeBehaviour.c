@@ -132,7 +132,7 @@ void referee_data_solve(uint8_t *frame)
 						EnQueue(&SendBuffer[1], send_bullet_limit(),11);
 						EnQueue(&SendBuffer[1], send_robot_information(),11);
         }
-        break;
+        break; 
         case POWER_HEAT_DATA_CMD_ID:
         {
             memcpy(&power_heat_data_t, frame + index, sizeof(power_heat_data_t));
