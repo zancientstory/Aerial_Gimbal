@@ -87,7 +87,6 @@ void CalculateThread(void const *pvParameters)
                            Gimbal.Output.AmmoLeft,
                            Gimbal.Output.AmmoRight);
         DaMiaoCanSend(Gimbal.Output.Damiao * PITCH_MOTOR_DIRECTION);
-
         osDelay(1);
     }
 }
@@ -248,7 +247,7 @@ void GimbalFireModeUpdate(void)
     }
     else
     {
-        if (SHOOT_COMMAND_KEYMAP)
+        if (SHOOT_COMMAND_KEYMAP || (Gimbal.ControlMode == GM_AIMBOT_OPERATE && (Aimbot_G.AimbotState & AIMBOT_SHOOT_REQUEST_OFFSET)))
         {
             Gimbal.FireMode = GM_FIRE_BUSY;
         }
@@ -650,7 +649,7 @@ void AmmoCommandUpdate(void)
     }
     else if (Gimbal.StateMachine == GM_MATCH)
     {
-			        AmmoSpeedLimit();
+        AmmoSpeedLimit();
 
         Gimbal.Output.AmmoLeft = PID_calc(&Gimbal.Pid.AmmoLeft,
                                           Gimbal.MotorMeasure.ShootMotor.AmmoLeftMotorSpeed,

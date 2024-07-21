@@ -24,7 +24,9 @@
         "usbpackage.h": "c",
         "interruptservice.h": "c",
         "usb.h": "c",
-        "crc8_crc16.h": "c"
+        "crc8_crc16.h": "c",
+        "cstddef": "c",
+        "limits": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

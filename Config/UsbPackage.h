@@ -40,20 +40,19 @@ typedef __PACKED_STRUCT
   uint8_t _SOF;
   uint8_t ID;
   // 自瞄状态
-  uint8_t AimbotState;
-	uint8_t AimbotTarget;
+  uint8_t AimbotState; // 0：是否进入自瞄 1：是否开火
+  uint8_t AimbotTarget;
   // 自瞄数据
-	float PitchRelativeAngle;
+  float PitchRelativeAngle;
   float YawRelativeAngle;
-	// 目标角速度
-	float TargetPitchSpeed;
-	float TargetYawSpeed;
-	//时间戳
-	uint32_t SystemTimer;
+  // 目标角速度
+  float TargetPitchSpeed;
+  float TargetYawSpeed;
+  // 时间戳
+  uint32_t SystemTimer;
   // 包尾
   uint8_t _EOF;
   // 处理后数据
-
 }
 AimbotFrame_SCM_t;
 //// 49字节
