@@ -87,6 +87,12 @@ void CalculateThread(void const *pvParameters)
                            Gimbal.Output.AmmoLeft,
                            Gimbal.Output.AmmoRight);
         DaMiaoCanSend(Gimbal.Output.Damiao * PITCH_MOTOR_DIRECTION);
+//        GimbalMotorControl(Gimbal.Output.Yaw * YAW_MOTOR_DIRECTION,
+//                           Gimbal.Output.Pitch * PITCH_MOTOR_DIRECTION,
+//                           Gimbal.Output.Rotor,
+//                           0,
+//                           Gimbal.Output.AmmoRight);
+//        DaMiaoCanSend(Gimbal.Output.Damiao * PITCH_MOTOR_DIRECTION);
         osDelay(1);
     }
 }
@@ -247,7 +253,11 @@ void GimbalFireModeUpdate(void)
     }
     else
     {
-        if (SHOOT_COMMAND_KEYMAP || (Gimbal.ControlMode == GM_AIMBOT_OPERATE && (Aimbot_G.AimbotState & AIMBOT_SHOOT_REQUEST_OFFSET)))
+//        if (SHOOT_COMMAND_KEYMAP || (Gimbal.ControlMode == GM_AIMBOT_OPERATE && (Aimbot_G.AimbotState & AIMBOT_SHOOT_REQUEST_OFFSET)))
+//        {
+//            Gimbal.FireMode = GM_FIRE_BUSY;
+//        }
+        if (SHOOT_COMMAND_KEYMAP)
         {
             Gimbal.FireMode = GM_FIRE_BUSY;
         }
@@ -260,90 +270,7 @@ void GimbalFireModeUpdate(void)
 
 GimbalControlMode_e CMthis = GM_NO_CONTROL;
 GimbalControlMode_e CMlast = GM_NO_CONTROL;
-#ifdef Aerial
-void GimbalPIDUpdate(void)
-{
-    CMthis = Gimbal.ControlMode;
 
-    if (CMthis == CMlast)
-    {
-        return;
-    }
-
-    if (CMthis == GM_MANUAL_OPERATE)
-    {
-        cascade_PID_init(&Gimbal.Pid.Yaw,
-                         YAW_ANGLE_MANUAL_OPERATE,
-                         YAW_SPEED_MANUAL_OPERATE,
-                         YAW_MAX_SPEED,
-                         YAW_MAX_ISPEED,
-                         GM6020_MAX_OUTPUT,
-                         GM6020_MAX_IOUTPUT);
-        cascade_PID_init(&Gimbal.Pid.Pitch,
-                         PITCH_ANGLE_MANUAL_OPERATE,
-                         PITCH_SPEED_MANUAL_OPERATE,
-                         PITCH_MAX_SPEED,
-                         PITCH_MAX_ISPEED,
-                         GM6020_MAX_OUTPUT,
-                         GM6020_MAX_IOUTPUT);
-    }
-    else if (CMthis == GM_AIMBOT_OPERATE)
-    {
-        cascade_PID_init(&Gimbal.Pid.Yaw,
-                         YAW_ANGLE_AIMBOT_OPERATE,
-                         YAW_SPEED_AIMBOT_OPERATE,
-                         YAW_MAX_SPEED,
-                         YAW_MAX_ISPEED,
-                         GM6020_MAX_OUTPUT,
-                         GM6020_MAX_IOUTPUT);
-        cascade_PID_init(&Gimbal.Pid.Pitch,
-                         PITCH_ANGLE_AIMBOT_OPERATE,
-                         PITCH_SPEED_AIMBOT_OPERATE,
-                         PITCH_MAX_SPEED,
-                         PITCH_MAX_ISPEED,
-                         GM6020_MAX_OUTPUT,
-                         GM6020_MAX_IOUTPUT);
-    }
-
-    else if (CMthis == GM_RESET_POSITION)
-    {
-        cascade_PID_init(&Gimbal.Pid.Yaw,
-                         YAW_ANGLE_RESET_POSITION,
-                         YAW_SPEED_RESET_POSITION,
-                         YAW_MAX_SPEED,
-                         YAW_MAX_ISPEED,
-                         GM6020_MAX_OUTPUT,
-                         GM6020_MAX_IOUTPUT);
-        cascade_PID_init(&Gimbal.Pid.Pitch,
-                         PITCH_ANGLE_RESET_POSITION,
-                         PITCH_SPEED_RESET_POSITION,
-                         PITCH_MAX_SPEED,
-                         PITCH_MAX_ISPEED,
-                         GM6020_MAX_OUTPUT,
-                         GM6020_MAX_IOUTPUT);
-    }
-    else
-    {
-        cascade_PID_init(&Gimbal.Pid.Yaw,
-                         YAW_ANGLE_NO_FORCE,
-                         YAW_SPEED_NO_FORCE,
-                         YAW_MAX_SPEED,
-                         YAW_MAX_ISPEED,
-                         GM6020_MAX_OUTPUT,
-                         GM6020_MAX_IOUTPUT);
-        cascade_PID_init(&Gimbal.Pid.Pitch,
-                         PITCH_ANGLE_NO_FORCE,
-                         PITCH_SPEED_NO_FORCE,
-                         PITCH_MAX_SPEED,
-                         PITCH_MAX_ISPEED,
-                         GM6020_MAX_OUTPUT,
-                         GM6020_MAX_IOUTPUT);
-    }
-
-    CMlast = CMthis;
-}
-#endif
-#ifdef NewAerial
 void GimbalPIDUpdate(void)
 {
     CMthis = Gimbal.ControlMode;
@@ -425,7 +352,6 @@ void GimbalPIDUpdate(void)
 
     CMlast = CMthis;
 }
-#endif
 GimbalFireMode_e FMthis = GM_FIRE_UNABLE;
 GimbalFireMode_e FMlast = GM_FIRE_UNABLE;
 void RotorPIDUpdate(void)
@@ -460,7 +386,6 @@ void GimbalMeasureUpdate(void)
     GimbalEulerSystemMeasureUpdate(&Gimbal.Imu);
 }
 float yaw_zero_imu = 0.0f; // 零点时，imu数据
-#ifdef NewAerial
 void GimbalCommandUpdate(void)
 {
     if (Gimbal.ControlMode == GM_MANUAL_OPERATE)
@@ -513,61 +438,6 @@ void GimbalCommandUpdate(void)
         Gimbal.Output.Damiao = 0;
     }
 }
-#endif
-#ifdef Aerial
-void GimbalCommandUpdate(void)
-{
-    if (Gimbal.ControlMode == GM_MANUAL_OPERATE)
-    {
-        Gimbal.Command.Pitch -= GIMBAL_CMD_PITCH_KEYMAP;
-        if (Gimbal.Imu.YawAngle <= (yaw_zero_imu + YAW_RIGHT_LEN) && Gimbal.Imu.YawAngle >= yaw_zero_imu - YAW_LEFT_LEN)
-        {
-            Gimbal.Command.Yaw += GIMBAL_CMD_YAW_KEYMAP;
-        }
-        else if (Gimbal.Imu.YawAngle > yaw_zero_imu + YAW_RIGHT_LEN)
-        {
-            Gimbal.Command.Yaw -= 0.01 * NormalizedLimit(Gimbal.Imu.YawAngle - (yaw_zero_imu + YAW_RIGHT_LEN));
-        }
-        else if (Gimbal.Imu.YawAngle < yaw_zero_imu - YAW_LEFT_LEN)
-        {
-            Gimbal.Command.Yaw -= 0.01 * NormalizedLimit(Gimbal.Imu.YawAngle - (yaw_zero_imu - YAW_LEFT_LEN));
-        }
-        Gimbal.Command.Yaw = loop_fp32_constrain(Gimbal.Command.Yaw, Gimbal.Imu.YawAngle - 180.0f, Gimbal.Imu.YawAngle + 180.0f);
-        Gimbal.Command.Pitch = fp32_constrain(Gimbal.Command.Pitch, PITCH_MIN_ANGLE, PITCH_MAX_ANGLE);
-        Gimbal.Output.Yaw = cascade_PID_calc(&Gimbal.Pid.Yaw, Gimbal.Imu.YawAngle, Gimbal.Imu.YawSpeed, Gimbal.Command.Yaw);
-        Gimbal.Output.Pitch = cascade_PID_calc(&Gimbal.Pid.Pitch, Gimbal.Imu.PitchAngle, Gimbal.Imu.PitchSpeed, Gimbal.Command.Pitch);
-        // pitch_aimbot_filter.out = Gimbal.Command.Pitch;
-    }
-    else if (Gimbal.ControlMode == GM_AIMBOT_OPERATE)
-    {
-        Gimbal.Command.Pitch = Aimbot_G.PitchRelativeAngle;
-        Gimbal.Command.Yaw = Aimbot_G.YawRelativeAngle;
-        Gimbal.Command.Yaw = fp32_constrain(Gimbal.Command.Yaw, yaw_zero_imu - YAW_LEFT_LEN, yaw_zero_imu + YAW_RIGHT_LEN);
-        Gimbal.Command.Pitch = fp32_constrain(Gimbal.Command.Pitch, PITCH_MIN_ANGLE, PITCH_MAX_ANGLE);
-        Gimbal.Output.Yaw = cascade_PID_calc(&Gimbal.Pid.Yaw, Gimbal.Imu.YawAngle, Gimbal.Imu.YawSpeed, Gimbal.Command.Yaw);
-        Gimbal.Output.Pitch = cascade_PID_calc(&Gimbal.Pid.Pitch, Gimbal.Imu.PitchAngle, Gimbal.Imu.PitchSpeed, Gimbal.Command.Pitch);
-    }
-
-    else if (Gimbal.ControlMode == GM_RESET_POSITION)
-    {
-        Gimbal.Command.Pitch = Gimbal.Imu.PitchAngle;
-        Gimbal.Command.Yaw = Gimbal.Imu.YawAngle;
-        // 使用电机编码值作为目标值，使云台回中；并记录下会中后的电机yaw轴imu，作为之后imu控制的零点
-        float this_Gimbal_Command_Yaw = loop_fp32_constrain(YAW_ZERO_ECDANGLE, Gimbal.MotorMeasure.GimbalMotor.YawMotorAngle - 180.0f, Gimbal.MotorMeasure.GimbalMotor.YawMotorAngle + 180.0f);
-        yaw_zero_imu = Gimbal.Imu.YawAngle;
-
-        Gimbal.Output.Yaw = YAW_MOTOR_DIRECTION * cascade_PID_calc(&Gimbal.Pid.Yaw, Gimbal.MotorMeasure.GimbalMotor.YawMotorAngle, Gimbal.MotorMeasure.GimbalMotor.YawMotorSpeed, this_Gimbal_Command_Yaw);
-        Gimbal.Output.Pitch = cascade_PID_calc(&Gimbal.Pid.Pitch, Gimbal.Imu.PitchAngle, Gimbal.Imu.PitchSpeed, 0);
-    }
-    else
-    {
-        Gimbal.Command.Yaw = Gimbal.Imu.YawAngle;
-        Gimbal.Command.Pitch = Gimbal.Imu.PitchAngle;
-        Gimbal.Output.Yaw = 0;
-        Gimbal.Output.Pitch = 0;
-    }
-}
-#endif
 void RotorCommandUpdate(void)
 {
     if (Gimbal.FireMode == GM_FIRE_BUSY)
@@ -588,7 +458,7 @@ void RotorCommandUpdate(void)
 }
 int AMMO_SPEEDSET_30MS_LEFT = 7650;  // 8100;
 int AMMO_SPEEDSET_30MS_RIGHT = 7650; // 7950; // 7750;
-int ammo_speed_limit_k = 150;
+int ammo_speed_limit_k = 120;//150;
 void AmmoSpeedLimit(void) // 通过实时弹速来限制摩擦轮转速
 {
     static float speed_error = 0.0f;

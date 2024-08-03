@@ -62,7 +62,8 @@ void UIThread(void const *argument)
 			UI_ReFresh(1, Vulnerability_data_change);
 			UI_ReFresh(2, fly_data_change, dog_data_change);
 
-			ui_add_flag = 1;
+			ui_add_flag ++;
+			ui_add_flag %=10;
 		}
 		else if (Gimbal.StateMachine == GM_NO_FORCE)
 		{
