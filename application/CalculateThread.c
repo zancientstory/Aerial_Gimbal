@@ -87,12 +87,12 @@ void CalculateThread(void const *pvParameters)
                            Gimbal.Output.AmmoLeft,
                            Gimbal.Output.AmmoRight);
         DaMiaoCanSend(Gimbal.Output.Damiao * PITCH_MOTOR_DIRECTION);
-//        GimbalMotorControl(Gimbal.Output.Yaw * YAW_MOTOR_DIRECTION,
-//                           Gimbal.Output.Pitch * PITCH_MOTOR_DIRECTION,
-//                           Gimbal.Output.Rotor,
-//                           0,
-//                           Gimbal.Output.AmmoRight);
-//        DaMiaoCanSend(Gimbal.Output.Damiao * PITCH_MOTOR_DIRECTION);
+        //        GimbalMotorControl(Gimbal.Output.Yaw * YAW_MOTOR_DIRECTION,
+        //                           Gimbal.Output.Pitch * PITCH_MOTOR_DIRECTION,
+        //                           Gimbal.Output.Rotor,
+        //                           0,
+        //                           Gimbal.Output.AmmoRight);
+        //        DaMiaoCanSend(Gimbal.Output.Damiao * PITCH_MOTOR_DIRECTION);
         osDelay(1);
     }
 }
@@ -253,14 +253,14 @@ void GimbalFireModeUpdate(void)
     }
     else
     {
-//        if (SHOOT_COMMAND_KEYMAP || (Gimbal.ControlMode == GM_AIMBOT_OPERATE && (Aimbot_G.AimbotState & AIMBOT_SHOOT_REQUEST_OFFSET)))
-//        {
-//            Gimbal.FireMode = GM_FIRE_BUSY;
-//        }
-        if (SHOOT_COMMAND_KEYMAP)
+        if (SHOOT_COMMAND_KEYMAP || (Gimbal.ControlMode == GM_AIMBOT_OPERATE && (Aimbot_G.AimbotState & AIMBOT_SHOOT_REQUEST_OFFSET)))
         {
             Gimbal.FireMode = GM_FIRE_BUSY;
         }
+        // if (SHOOT_COMMAND_KEYMAP)
+        // {
+        //     Gimbal.FireMode = GM_FIRE_BUSY;
+        // }
         else
         {
             Gimbal.FireMode = GM_FIRE_READY;
@@ -458,8 +458,8 @@ void RotorCommandUpdate(void)
 }
 int AMMO_SPEEDSET_30MS_LEFT = 7650;  // 8100;
 int AMMO_SPEEDSET_30MS_RIGHT = 7650; // 7950; // 7750;
-int ammo_speed_limit_k = 120;//150;
-void AmmoSpeedLimit(void) // 通过实时弹速来限制摩擦轮转速
+int ammo_speed_limit_k = 120;        // 150;
+void AmmoSpeedLimit(void)            // 通过实时弹速来限制摩擦轮转速
 {
     static float speed_error = 0.0f;
     static float last_speed_error = 0.0f;

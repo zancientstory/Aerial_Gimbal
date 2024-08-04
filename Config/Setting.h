@@ -2,7 +2,7 @@
 #define SETTING_H
 
 #define NewAerial
-//#define X_EIGHT_AERIAL
+// #define X_EIGHT_AERIAL
 
 #define PARAMETER_FILE "AerialParam.h"
 #define KEYMAP_FILE "AerialKeyMap.h"
@@ -14,14 +14,14 @@
 
 #ifdef NewAerial
 // imu安装方向（c板）
-//#define IMU_DIRECTION_xryrz_XYZ
+// #define IMU_DIRECTION_xryrz_XYZ
 #define IMU_DIRECTION_rxyrz_XYZ
 // gyro yaw轴偏置
-#define GYRO_YAW_BIAS 0.0035f
+#define GYRO_YAW_BIAS 0.0039f
 // 主发射机构类型
 // master ID(slave id)
 #define YAW_MOTOR_ID 0x206   //(0x1ff)
-#define PITCH_MOTOR_ID 0x205 //(0x1ff) 
+#define PITCH_MOTOR_ID 0x205 //(0x1ff)
 #define DAMIAO_PITCH_MOTOR_SLAVE_ID 0x07
 #define DAMIAO_PITCH_MOTOR_MASTER_ID 0x01
 #define ROTOR_MOTOR_ID 0x202      //(0x200)
@@ -54,7 +54,7 @@
 // 主发射机构类型
 // master ID(slave id)
 #define YAW_MOTOR_ID 0x206   //(0x1ff)
-#define PITCH_MOTOR_ID 0x205 //(0x1ff) 
+#define PITCH_MOTOR_ID 0x205 //(0x1ff)
 #define DAMIAO_PITCH_MOTOR_SLAVE_ID 0x07
 #define DAMIAO_PITCH_MOTOR_MASTER_ID 0x01
 #define ROTOR_MOTOR_ID 0x202      //(0x200)
@@ -79,14 +79,11 @@
 #define PITCH_MAX_ANGLE 22.0f
 #endif
 
-
 // 默认摩擦轮速度
 #define DEFAULT_AMMOL_PID AMMO_LEFT_SPEED_30MS
 #define DEFAULT_AMMOR_PID AMMO_RIGHT_SPEED_30MS
 #define DEFAULT_AMMO_SPEEDSET AMMO_SPEEDSET_30MS
 // 通信can总线位置
 #define COMMUNICATE_CANPORT hcan2
-
-
 
 #endif

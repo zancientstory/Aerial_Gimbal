@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "usb.h": "c",
+        "usbpackage.h": "c",
+        "__locale": "c",
+        "cstddef": "c",
+        "ios": "c",
+        "limits": "c",
+        "locale": "c",
+        "new": "c",
+        "string": "c",
+        "variant": "c"
+    }
+}
