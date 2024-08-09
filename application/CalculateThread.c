@@ -87,12 +87,12 @@ void CalculateThread(void const *pvParameters)
                            Gimbal.Output.AmmoLeft,
                            Gimbal.Output.AmmoRight);
         DaMiaoCanSend(Gimbal.Output.Damiao * PITCH_MOTOR_DIRECTION);
-        //        GimbalMotorControl(Gimbal.Output.Yaw * YAW_MOTOR_DIRECTION,
-        //                           Gimbal.Output.Pitch * PITCH_MOTOR_DIRECTION,
-        //                           Gimbal.Output.Rotor,
-        //                           0,
-        //                           Gimbal.Output.AmmoRight);
-        //        DaMiaoCanSend(Gimbal.Output.Damiao * PITCH_MOTOR_DIRECTION);
+//                GimbalMotorControl(0 * YAW_MOTOR_DIRECTION,
+//                                   0 * PITCH_MOTOR_DIRECTION,
+//                                   Gimbal.Output.Rotor,
+//                                   Gimbal.Output.AmmoLeft,
+//                                   Gimbal.Output.AmmoRight);
+//                DaMiaoCanSend(0);
         osDelay(1);
     }
 }
@@ -458,37 +458,40 @@ void RotorCommandUpdate(void)
 }
 int AMMO_SPEEDSET_30MS_LEFT = 7650;  // 8100;
 int AMMO_SPEEDSET_30MS_RIGHT = 7650; // 7950; // 7750;
-int ammo_speed_limit_k = 120;        // 150;
+int ammo_speed_limit_k = 50;         // 150;
 void AmmoSpeedLimit(void)            // 通过实时弹速来限制摩擦轮转速
 {
     static float speed_error = 0.0f;
     static float last_speed_error = 0.0f;
     static int speed_error_number = 0;
-    if (!(Remote.rc.s[1] == RC_SW_DOWN && Gimbal.StateMachine == GM_MATCH))
+    // if (!(Remote.rc.s[1] == RC_SW_DOWN && Gimbal.StateMachine == GM_MATCH) && shoot_data_t.initial_speed <= 30.0f)
+    // {
+    //     return;
+    // }
+    if (Gimbal.StateMachine != GM_MATCH)
     {
         return;
     }
-
     speed_error = shoot_data_t.initial_speed - 28.0f;
     if (speed_error == last_speed_error) // 如果两次误差相等，默认没有发射子弹；
     {
         return;
     }
-    if ((speed_error >= 1.3f || speed_error <= -1.3f)) // 如果误差较大且是同向误差
+    if ((speed_error >= 1.2f || speed_error <= -1.0f))
     {
         speed_error_number++;
-        if (speed_error * last_speed_error < 0)
+        if (speed_error * last_speed_error < 0) // 如果两次误差正负相反，清零误差计数
         {
             speed_error_number = 0;
         }
     }
-
     // change ammo speed set
     if (shoot_data_t.initial_speed >= 30.0f || shoot_data_t.initial_speed < -27.0f)
     {
         AMMO_SPEEDSET_30MS_LEFT -= speed_error * ammo_speed_limit_k;
     }
-    else if (speed_error_number > 4)
+
+    else if (speed_error_number > 4 && Remote.rc.s[1] == RC_SW_DOWN)
     {
         AMMO_SPEEDSET_30MS_LEFT -= speed_error * ammo_speed_limit_k;
         speed_error_number = 0;
